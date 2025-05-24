@@ -3,156 +3,144 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mega Rozbudowana Reklama Popup</title>
+<title>Super Rozbudowana Reklama Popup</title>
 <style>
   :root {
-    --clr-primary: #4a90e2;
-    --clr-secondary: #f5a623;
-    --clr-bg-light: #fff;
-    --clr-bg-dark: #222;
-    --clr-text-light: #222;
-    --clr-text-dark: #eee;
-    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --primary-color: #4a90e2;
+    --secondary-color: #f5a623;
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --shadow: 0 4px 15px rgba(0,0,0,0.3);
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
+
   body {
     font-family: var(--font-family);
     margin: 0; padding: 0;
-    background: var(--clr-bg-dark);
-    color: var(--clr-text-dark);
+    background: #121212;
+    color: #eee;
   }
 
-  /* Kontener reklamy */
-  .ad-popup {
+  /* kontener reklamy */
+  #super-ad-container {
     position: fixed;
-    width: 350px;
+    width: 320px;
     max-width: 90vw;
-    background: var(--clr-bg-dark);
-    color: var(--clr-text-dark);
+    background: var(--bg-gradient);
+    color: white;
     box-shadow: var(--shadow);
     border-radius: 16px;
     overflow: hidden;
-    z-index: 9999999;
+    z-index: 999999;
     font-size: 14px;
     user-select: none;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
     display: flex;
     flex-direction: column;
-    outline: none;
-    opacity: 0;
-    transform: translateY(100%) scale(0.8);
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .ad-popup.visible {
+
+  /* Pozycje reklamy */
+  #super-ad-container.bottom-right { bottom: 20px; right: 20px; transform: translateY(100%); }
+  #super-ad-container.bottom-left { bottom: 20px; left: 20px; transform: translateY(100%); }
+  #super-ad-container.top-center { top: 20px; left: 50%; transform: translate(-50%, -100%); }
+  #super-ad-container.center { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); }
+
+  /* Widoczna reklama */
+  #super-ad-container.visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  /* Pozycje */
-  .pos-bottom-right { bottom: 20px; right: 20px; }
-  .pos-bottom-left { bottom: 20px; left: 20px; }
-  .pos-top-center { top: 20px; left: 50%; transform: translateX(-50%) scale(0.8); }
-  .pos-center { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); }
-
-  /* Tryb jasny/ciemny */
-  .theme-dark {
-    background: var(--clr-bg-dark);
-    color: var(--clr-text-dark);
-  }
-  .theme-light {
-    background: var(--clr-bg-light);
-    color: var(--clr-text-light);
+    transform: translate(0,0) scale(1);
   }
 
   /* Nagłówek */
-  .ad-header {
-    padding: 18px 24px;
+  #super-ad-header {
+    padding: 16px 20px;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 18px;
     background: rgba(255 255 255 / 0.1);
     text-align: center;
   }
 
   /* Obrazek */
-  .ad-image {
+  #super-ad-image {
     width: 100%;
-    height: 190px;
+    height: 180px;
     object-fit: cover;
     border-bottom: 1px solid rgba(255 255 255 / 0.1);
-    cursor: pointer;
   }
 
-  /* Tekst */
-  .ad-message {
-    padding: 16px 24px;
+  /* Tekst reklamy */
+  #super-ad-message {
+    padding: 16px 20px;
     flex-grow: 1;
-    line-height: 1.5;
     overflow-y: auto;
+    line-height: 1.4;
   }
 
-  /* Przyciski */
-  .ad-actions {
+  /* Przyciski akcji */
+  #super-ad-actions {
     display: flex;
-    gap: 14px;
-    padding: 14px 24px;
+    gap: 12px;
+    padding: 12px 20px;
     background: rgba(0,0,0,0.15);
   }
-  .ad-actions button {
+  #super-ad-actions button {
     flex: 1;
     border: none;
-    border-radius: 12px;
-    background: var(--clr-secondary);
+    border-radius: 10px;
+    background: var(--secondary-color);
     color: #222;
     font-weight: 700;
     cursor: pointer;
-    padding: 14px 0;
-    box-shadow: 0 3px 9px rgba(0,0,0,0.3);
-    transition: background-color 0.25s ease, transform 0.15s ease;
+    padding: 12px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
-  .ad-actions button:hover, .ad-actions button:focus {
+  #super-ad-actions button:hover, #super-ad-actions button:focus {
     background: #f7c156;
     outline: none;
   }
-  .ad-actions button:active {
-    transform: scale(0.96);
+  #super-ad-actions button:active {
+    transform: scale(0.98);
   }
 
-  /* Pasek postępu */
-  .ad-progress {
+  /* Pasek postępu (odliczanie) */
+  #super-ad-progress-bar {
     height: 5px;
-    background: var(--clr-primary);
-    width: 0%;
-    transition: width linear;
+    background: var(--primary-color);
+    width: 0;
+    transition: width 15s linear;
   }
 
-  /* Stopka */
-  .ad-footer {
+  /* Stopka z zamknięciem i opcjami */
+  #super-ad-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0,0,0,0.25);
-    padding: 12px 24px;
+    background: rgba(0,0,0,0.2);
+    padding: 10px 20px;
     font-size: 13px;
   }
-  .ad-footer button {
+  #super-ad-footer button {
     background: none;
     border: none;
     color: #ccc;
-    font-weight: 600;
     cursor: pointer;
+    font-weight: 600;
     transition: color 0.3s ease;
   }
-  .ad-footer button:disabled {
+  #super-ad-footer button:disabled {
     color: #666;
     cursor: default;
   }
-  .ad-footer button:hover:not(:disabled), .ad-footer button:focus:not(:disabled) {
-    color: var(--clr-secondary);
+  #super-ad-footer button:hover:not(:disabled), 
+  #super-ad-footer button:focus:not(:disabled) {
+    color: var(--secondary-color);
     outline: none;
   }
-
-  /* Tryb cichy - banner dolny */
-  .ad-popup.silent {
+  
+  /* Tryb cichy: banner u dołu */
+  #super-ad-container.silent {
     width: 100%;
     max-width: none;
     border-radius: 0;
@@ -160,386 +148,292 @@
     left: 0 !important;
     right: 0 !important;
     top: auto !important;
-    transform: translateY(0) scale(1) !important;
+    transform: translateY(0) !important;
     flex-direction: row;
     align-items: center;
-    padding: 12px 24px;
+    padding: 10px 20px;
     font-size: 16px;
-    box-shadow: 0 -3px 12px rgba(0,0,0,0.7);
+    box-shadow: 0 -3px 10px rgba(0,0,0,0.7);
   }
-  .ad-popup.silent .ad-image,
-  .ad-popup.silent .ad-message,
-  .ad-popup.silent .ad-actions,
-  .ad-popup.silent .ad-footer,
-  .ad-popup.silent .ad-progress {
+  #super-ad-container.silent #super-ad-image,
+  #super-ad-container.silent #super-ad-message,
+  #super-ad-container.silent #super-ad-actions,
+  #super-ad-container.silent #super-ad-footer,
+  #super-ad-container.silent #super-ad-progress-bar {
     display: none;
   }
-  .ad-popup.silent::before {
-    content: "🔥 Super Promocja! Kliknij, aby dowiedzieć się więcej.";
+  #super-ad-container.silent #silent-banner-text {
+    display: block;
     flex-grow: 1;
-    color: var(--clr-secondary);
-    cursor: pointer;
+    color: #eee;
   }
 
-  /* Dodatkowe efekty przycisków */
-  .btn-mute-toggle {
-    font-size: 16px;
-    font-weight: 700;
-    border-radius: 9999px;
-    padding: 6px 12px;
-    background: var(--clr-primary);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    user-select: none;
-  }
 </style>
 </head>
 <body>
 
+<!-- Reklama -->
+<div id="super-ad-container" class="bottom-right" role="dialog" aria-modal="true" aria-labelledby="super-ad-header" tabindex="-1" aria-live="polite">
+  <div id="super-ad-header">Super Promocja!</div>
+  <img id="super-ad-image" src="https://picsum.photos/320/180?random=1" alt="Reklamowany produkt" loading="lazy" />
+  <div id="super-ad-message">
+    Skorzystaj z naszej wyjątkowej oferty! Kup teraz i zyskaj 50% rabatu na cały asortyment. Oferta ograniczona czasowo.
+  </div>
+  <div id="super-ad-actions">
+    <button id="btn-buy-now" type="button">Kup teraz</button>
+    <button id="btn-learn-more" type="button">Dowiedz się więcej</button>
+  </div>
+  <div id="super-ad-progress-bar" aria-hidden="true"></div>
+  <div id="super-ad-footer">
+    <button id="btn-close" type="button" aria-label="Zamknij reklamę" disabled>Zamknij (15s)</button>
+    <button id="btn-never-show" type="button" aria-label="Nigdy nie pokazuj tej reklamy">Nigdy nie pokazuj</button>
+  </div>
+</div>
+
+<!-- Tryb cichy -->
+<div id="silent-banner-text" style="display:none;">Super Promocja! Kliknij, aby dowiedzieć się więcej.</div>
+
+<!-- Przełącznik trybu -->
+<div style="position: fixed; bottom: 20px; left: 20px; z-index:1000000;">
+  <label style="color:#eee; font-size:14px; user-select:none;">
+    <input type="checkbox" id="toggle-silent-mode" />
+    Tryb cichy (tylko banner)
+  </label>
+</div>
+
+<audio id="sound-open" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+<audio id="sound-close" src="https://actions.google.com/sounds/v1/cartoon/metal_thud.ogg" preload="auto"></audio>
+
 <script>
-(() => {
-  "use strict";
+  (() => {
+    const container = document.getElementById('super-ad-container');
+    const btnClose = document.getElementById('btn-close');
+    const btnNeverShow = document.getElementById('btn-never-show');
+    const btnBuyNow = document.getElementById('btn-buy-now');
+    const btnLearnMore = document.getElementById('btn-learn-more');
+    const progressBar = document.getElementById('super-ad-progress-bar');
+    const silentModeToggle = document.getElementById('toggle-silent-mode');
+    const soundOpen = document.getElementById('sound-open');
+    const soundClose = document.getElementById('sound-close');
+    const silentBannerText = document.getElementById('silent-banner-text');
 
-  // --- CONFIG ---
-  const config = {
-    position: "pos-bottom-right", // pos-bottom-left, pos-top-center, pos-center
-    theme: "theme-dark", // theme-dark, theme-light
-    silentMode: false,
-    language: "pl", // pl, en
-    maxDailyShows: 3,
-    retryDelaysMinutes: [10, 30, 60], // retry intervals after closing (progressive)
-    durationMs: 30000, // how long popup stays open (ms)
-  };
+    const AD_KEY = 'superAdNeverShow';
+    const CLICK_BUY = 'superAdClickBuy';
+    const CLICK_LEARN = 'superAdClickLearn';
 
-  // --- TEXTS ---
-  const texts = {
-    pl: {
-      title: "Super promocja tylko dziś!",
-      message: "Nie przegap naszej wyjątkowej oferty! Kliknij przycisk „Kup teraz” i zyskaj 50% rabatu na wszystkie produkty.",
-      btnBuy: "Kup teraz",
-      btnMore: "Dowiedz się więcej",
-      btnClose: "Zamknij",
-      btnNeverShow: "Nigdy nie pokazuj",
-      muteOn: "🔈 Dźwięki: ON",
-      muteOff: "🔇 Dźwięki: OFF",
-      silentBannerText: "🔥 Super Promocja! Kliknij, aby dowiedzieć się więcej.",
-      ariaLabel: "Okno popup z reklamą promocyjną",
-    },
-    en: {
-      title: "Super sale just today!",
-      message: "Don't miss our special offer! Click 'Buy Now' and get 50% off all products.",
-      btnBuy: "Buy Now",
-      btnMore: "Learn More",
-      btnClose: "Close",
-      btnNeverShow: "Never Show Again",
-      muteOn: "🔈 Sound: ON",
-      muteOff: "🔇 Sound: OFF",
-      silentBannerText: "🔥 Super Sale! Click to learn more.",
-      ariaLabel: "Popup window with promotional advertisement",
+    const DISPLAY_LIMIT = 3;
+    const DISPLAY_COUNT_KEY = 'superAdDisplayCount';
+    const DISPLAY_DATE_KEY = 'superAdLastShownDate';
+
+    const PROGRESS_DURATION = 15000; // 15s
+
+    let countdownTimeout, progressTimeout;
+    let progressValue = 0;
+    let isVisible = false;
+    let silentMode = false;
+
+    // Pozycje (można rozbudować)
+    const positions = ['bottom-right', 'bottom-left', 'top-center', 'center'];
+    let currentPosition = 0;
+
+    // Sprawdza, czy reklama może być pokazana (limit + nigdy nie pokazuj)
+    function canShowAd() {
+      if (localStorage.getItem(AD_KEY) === 'true') return false;
+      const lastDate = localStorage.getItem(DISPLAY_DATE_KEY);
+      const today = new Date().toISOString().slice(0,10);
+      if (lastDate !== today) {
+        localStorage.setItem(DISPLAY_DATE_KEY, today);
+        localStorage.setItem(DISPLAY_COUNT_KEY, '0');
+        return true;
+      }
+      const count = parseInt(localStorage.getItem(DISPLAY_COUNT_KEY) || '0', 10);
+      return count < DISPLAY_LIMIT;
     }
-  };
 
-  // --- STATE ---
-  let showCount = 0;
-  let retryIndex = 0;
-  let isMuted = false;
-  let retryTimeout = null;
-
-  // --- STORAGE KEYS ---
-  const STORAGE_KEY_SHOWS = "adPopupShows";
-  const STORAGE_KEY_MUTE = "adPopupMute";
-  const STORAGE_KEY_NEVER_SHOW = "adPopupNeverShow";
-  const STORAGE_KEY_LAST_SHOW = "adPopupLastShow";
-
-  // --- SOUNDS ---
-  const audioOpen = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
-  const audioClose = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_snap.ogg");
-
-  function playSound(sound) {
-    if (!isMuted) sound.play().catch(() => {});
-  }
-
-  // --- UTILS ---
-
-  // Save and read from localStorage
-  function saveToStorage(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
-  }
-  function loadFromStorage(key, def) {
-    try {
-      const val = localStorage.getItem(key);
-      if (val === null) return def;
-      return JSON.parse(val);
-    } catch { return def; }
-  }
-
-  // Increment show count with date reset daily
-  function incrementShowCount() {
-    const today = new Date().toISOString().slice(0, 10);
-    const data = loadFromStorage(STORAGE_KEY_SHOWS, { date: today, count: 0 });
-    if (data.date !== today) {
-      data.date = today;
-      data.count = 0;
+    function incrementDisplayCount() {
+      const count = parseInt(localStorage.getItem(DISPLAY_COUNT_KEY) || '0', 10) + 1;
+      localStorage.setItem(DISPLAY_COUNT_KEY, count.toString());
     }
-    data.count++;
-    saveToStorage(STORAGE_KEY_SHOWS, data);
-    return data.count;
-  }
 
-  function getShowCount() {
-    const today = new Date().toISOString().slice(0, 10);
-    const data = loadFromStorage(STORAGE_KEY_SHOWS, { date: today, count: 0 });
-    if (data.date !== today) return 0;
-    return data.count;
-  }
+    // Pokaż reklamę
+    function showAd() {
+      if (!canShowAd()) return;
+      if (isVisible) return;
 
-  // --- RENDER POPUP ---
+      isVisible = true;
 
-  function createPopup() {
-    const langText = texts[config.language];
+      // Zmieniamy pozycję dla różnorodności
+      container.className = '';
+      const pos = positions[currentPosition];
+      container.classList.add(pos);
+      currentPosition = (currentPosition + 1) % positions.length;
 
-    // Main container
-    const popup = document.createElement("div");
-    popup.className = `ad-popup ${config.position} ${config.theme}`;
-    popup.setAttribute("role", "dialog");
-    popup.setAttribute("aria-label", langText.ariaLabel);
-    popup.setAttribute("tabindex", "-1");
-    popup.style.opacity = "0";
-    popup.style.transform = "translateY(100%) scale(0.8)";
+      container.classList.remove('silent');
+      silentBannerText.style.display = 'none';
 
-    // Silent banner mode
-    if (config.silentMode) {
-      popup.classList.add("silent");
-      popup.textContent = langText.silentBannerText;
-      popup.style.cursor = "pointer";
-      popup.addEventListener("click", () => {
-        openLink();
-        closePopup(popup);
+      container.style.display = 'flex';
+      container.focus();
+
+      // Animacja pokazania
+      requestAnimationFrame(() => container.classList.add('visible'));
+
+      // Dźwięk otwarcia
+      if (!silentMode) soundOpen.play().catch(() => {});
+
+      // Pasek postępu
+      progressBar.style.transition = 'none';
+      progressBar.style.width = '0%';
+      requestAnimationFrame(() => {
+        progressBar.style.transition = `width ${PROGRESS_DURATION}ms linear`;
+        progressBar.style.width = '100%';
       });
-      return popup;
+
+      // Przycisk zamknij blokowany przez 15s
+      btnClose.disabled = true;
+      btnClose.textContent = `Zamknij (${PROGRESS_DURATION/1000}s)`;
+
+      let remaining = PROGRESS_DURATION / 1000;
+      const intervalId = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(intervalId);
+          btnClose.disabled = false;
+          btnClose.textContent = 'Zamknij';
+        } else {
+          btnClose.textContent = `Zamknij (${remaining}s)`;
+        }
+      }, 1000);
+
+      incrementDisplayCount();
+
+      // Focus trap (proste)
+      trapFocus(container);
     }
 
-    // Header
-    const header = document.createElement("div");
-    header.className = "ad-header";
-    header.textContent = langText.title;
-    popup.appendChild(header);
+    // Ukryj reklamę
+    function hideAd() {
+      if (!isVisible) return;
+      isVisible = false;
 
-    // Image with lazy loading
-    const img = document.createElement("img");
-    img.className = "ad-image";
-    img.alt = langText.title;
-    img.loading = "lazy";
-    img.src = "https://picsum.photos/seed/promo/400/200";
-    img.tabIndex = 0;
-    img.setAttribute("role", "button");
-    img.setAttribute("aria-pressed", "false");
-    img.addEventListener("click", () => {
-      openLink();
-      incrementClicks("image");
-      closePopup(popup);
+      // Dźwięk zamknięcia
+      if (!silentMode) soundClose.play().catch(() => {});
+
+      container.classList.remove('visible');
+      setTimeout(() => {
+        container.style.display = 'none';
+        progressBar.style.width = '0%';
+      }, 500);
+    }
+
+    // Kliknięcia przycisków akcji
+    btnBuyNow.addEventListener('click', () => {
+      incrementClick(CLICK_BUY);
+      window.open('https://twojsklep.pl/kup-teraz', '_blank', 'noopener');
+      hideAd();
     });
-    img.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        openLink();
-        incrementClicks("image");
-        closePopup(popup);
+
+    btnLearnMore.addEventListener('click', () => {
+      incrementClick(CLICK_LEARN);
+      window.open('https://twojsklep.pl/oferta', '_blank', 'noopener');
+      hideAd();
+    });
+
+    // Zamknięcie reklamy
+    btnClose.addEventListener('click', () => {
+      if (btnClose.disabled) return;
+      hideAd();
+    });
+
+    // Nigdy nie pokazuj tej reklamy
+    btnNeverShow.addEventListener('click', () => {
+      localStorage.setItem(AD_KEY, 'true');
+      hideAd();
+    });
+
+    // Przełącznik trybu cichego
+    silentModeToggle.addEventListener('change', (e) => {
+      silentMode = e.target.checked;
+      if (silentMode) {
+        container.classList.add('silent');
+        container.classList.add('visible');
+        container.style.bottom = '0';
+        container.style.left = '0';
+        container.style.right = '0';
+        silentBannerText.style.display = 'block';
+        // Ukryj inne elementy reklamy
+        container.querySelectorAll('#super-ad-image, #super-ad-message, #super-ad-actions, #super-ad-footer, #super-ad-progress-bar').forEach(el => el.style.display = 'none');
+      } else {
+        container.classList.remove('silent');
+        container.querySelectorAll('#super-ad-image, #super-ad-message, #super-ad-actions, #super-ad-footer, #super-ad-progress-bar').forEach(el => el.style.display = '');
+        silentBannerText.style.display = 'none';
+        container.classList.remove('visible');
+        container.style.bottom = '';
+        container.style.left = '';
+        container.style.right = '';
+        container.style.display = 'none';
+        // Odpal ponownie reklamę
+        showAd();
       }
     });
-    popup.appendChild(img);
 
-    // Message
-    const message = document.createElement("div");
-    message.className = "ad-message";
-    message.textContent = langText.message;
-    popup.appendChild(message);
+    // Liczenie kliknięć na przyciski
+    function incrementClick(key) {
+      let count = parseInt(localStorage.getItem(key) || '0', 10);
+      localStorage.setItem(key, (count + 1).toString());
+      console.log(`Kliknięć ${key}:`, count + 1);
+    }
 
-    // Actions
-    const actions = document.createElement("div");
-    actions.className = "ad-actions";
+    // Focus trap - prosty
+    function trapFocus(element) {
+      const focusableElements = element.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (!focusableElements.length) return;
 
-    const btnBuy = document.createElement("button");
-    btnBuy.textContent = langText.btnBuy;
-    btnBuy.addEventListener("click", () => {
-      incrementClicks("buy");
-      openLink();
-      closePopup(popup);
-    });
-    actions.appendChild(btnBuy);
+      const firstEl = focusableElements[0];
+      const lastEl = focusableElements[focusableElements.length -1];
 
-    const btnMore = document.createElement("button");
-    btnMore.textContent = langText.btnMore;
-    btnMore.addEventListener("click", () => {
-      incrementClicks("more");
-      openLink();
-      closePopup(popup);
-    });
-    actions.appendChild(btnMore);
-
-    popup.appendChild(actions);
-
-    // Progress bar
-    const progress = document.createElement("div");
-    progress.className = "ad-progress";
-    popup.appendChild(progress);
-
-    // Footer with close, mute and never-show buttons
-    const footer = document.createElement("div");
-    footer.className = "ad-footer";
-
-    const btnClose = document.createElement("button");
-    btnClose.textContent = langText.btnClose;
-    btnClose.addEventListener("click", () => {
-      closePopup(popup);
-      scheduleRetry();
-    });
-    footer.appendChild(btnClose);
-
-    const btnMute = document.createElement("button");
-    btnMute.className = "btn-mute-toggle";
-    btnMute.textContent = isMuted ? langText.muteOff : langText.muteOn;
-    btnMute.addEventListener("click", () => {
-      isMuted = !isMuted;
-      saveToStorage(STORAGE_KEY_MUTE, isMuted);
-      btnMute.textContent = isMuted ? langText.muteOff : langText.muteOn;
-      console.log(`Dźwięki ${isMuted ? "wyłączone" : "włączone"}`);
-    });
-    footer.appendChild(btnMute);
-
-    const btnNeverShow = document.createElement("button");
-    btnNeverShow.textContent = langText.btnNeverShow;
-    btnNeverShow.addEventListener("click", () => {
-      saveToStorage(STORAGE_KEY_NEVER_SHOW, true);
-      closePopup(popup);
-    });
-    footer.appendChild(btnNeverShow);
-
-    popup.appendChild(footer);
-
-    // Focus trap implementation
-    popup.addEventListener("keydown", (e) => {
-      if (e.key === "Tab") {
-        const focusable = popup.querySelectorAll("button, [tabindex]:not([tabindex='-1']), img[tabindex='0']");
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
+      function handleTrap(e) {
+        if (e.key === 'Tab') {
+          if (e.shiftKey) { // Shift + Tab
+            if (document.activeElement === firstEl) {
+              e.preventDefault();
+              lastEl.focus();
+            }
+          } else { // Tab
+            if (document.activeElement === lastEl) {
+              e.preventDefault();
+              firstEl.focus();
+            }
           }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
+        } else if (e.key === 'Escape') {
+          if (!btnClose.disabled) hideAd();
         }
       }
-      if (e.key === "Escape") {
-        closePopup(popup);
-        scheduleRetry();
-      }
+
+      element.addEventListener('keydown', handleTrap);
+
+      // focus na pierwszy element
+      firstEl.focus();
+    }
+
+    // Pokaz reklamę po 3 sek od załadowania strony
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (!silentMode) showAd();
+      }, 3000);
     });
 
-    // Play open sound on show
-    setTimeout(() => playSound(audioOpen), 100);
+    // Retry system - po zamknięciu reklamy można ją pokazać ponownie po 60 sekundach
+    let adClosedTime = null;
+    btnClose.addEventListener('click', () => {
+      adClosedTime = Date.now();
+      setTimeout(() => {
+        if (!localStorage.getItem(AD_KEY)) {
+          showAd();
+        }
+      }, 60000);
+    });
 
-    return popup;
-  }
-
-  // --- OPEN LINK ---
-  function openLink() {
-    const url = "https://example.com/promo"; // Zamień na własny link
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
-
-  // --- TRACKING ---
-  const clicksStats = { buy: 0, more: 0, image: 0, close: 0 };
-
-  function incrementClicks(type) {
-    if (!clicksStats[type]) clicksStats[type] = 0;
-    clicksStats[type]++;
-    console.log(`Kliknięcia ${type}: ${clicksStats[type]}`);
-  }
-
-  // --- CLOSE POPUP ---
-  function closePopup(popup) {
-    if (!popup) return;
-    incrementClicks("close");
-    playSound(audioClose);
-    popup.classList.remove("visible");
-    setTimeout(() => {
-      if (popup.parentElement) popup.parentElement.removeChild(popup);
-    }, 400);
-  }
-
-  // --- SCHEDULE RETRY ---
-  function scheduleRetry() {
-    if (loadFromStorage(STORAGE_KEY_NEVER_SHOW, false)) return;
-
-    retryIndex = Math.min(retryIndex, config.retryDelaysMinutes.length - 1);
-    const delay = config.retryDelaysMinutes[retryIndex] * 60 * 1000;
-    retryIndex++;
-    console.log(`Reklama pojawi się ponownie za ${config.retryDelaysMinutes[retryIndex-1]} minut.`);
-    retryTimeout = setTimeout(() => {
-      showPopup();
-    }, delay);
-  }
-
-  // --- SHOW POPUP ---
-  function showPopup() {
-    if (loadFromStorage(STORAGE_KEY_NEVER_SHOW, false)) {
-      console.log("Reklama została wyłączona na stałe.");
-      return;
-    }
-
-    const showsToday = getShowCount();
-    if (showsToday >= config.maxDailyShows) {
-      console.log("Limit wyświetleń reklamy na dziś został osiągnięty.");
-      return;
-    }
-
-    retryIndex = 0;
-
-    const popup = createPopup();
-    document.body.appendChild(popup);
-
-    // Animate show
-    setTimeout(() => {
-      popup.classList.add("visible");
-      popup.focus();
-    }, 50);
-
-    // Animate progress bar
-    const progress = popup.querySelector(".ad-progress");
-    progress.style.transition = `width ${config.durationMs}ms linear`;
-    setTimeout(() => {
-      progress.style.width = "100%";
-    }, 100);
-
-    // Auto close after duration
-    setTimeout(() => {
-      closePopup(popup);
-      scheduleRetry();
-    }, config.durationMs);
-
-    incrementShowCount();
-  }
-
-  // --- INITIALIZE ---
-  function init() {
-    // Load mute state
-    isMuted = loadFromStorage(STORAGE_KEY_MUTE, false);
-
-    // Start popup after delay (5s)
-    setTimeout(() => {
-      showPopup();
-    }, 5000);
-  }
-
-  // --- RUN ---
-  document.addEventListener("DOMContentLoaded", init);
-})();
+  })();
 </script>
 
 </body>
