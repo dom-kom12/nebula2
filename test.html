@@ -5,150 +5,153 @@
   <title>Reklamy rotacyjne</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
     }
 
     .ad-popup {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 320px;
-      background: white;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      width: 300px;
+      background-color: white;
+      border: 2px solid #555;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       padding: 10px;
       z-index: 10000;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      transform: translateY(100%);
       opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.5s, transform 0.5s;
     }
 
     .ad-popup.visible {
-      transform: translateY(0);
       opacity: 1;
+      transform: translateY(0);
     }
 
-    .ad-header {
+    .ad-popup img {
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .ad-popup .title {
       font-weight: bold;
       font-size: 1.1em;
-      margin-bottom: 5px;
+      margin-top: 5px;
     }
 
-    .ad-image {
-      width: 100%;
-      height: auto;
-      cursor: pointer;
-      border-radius: 6px;
+    .ad-popup .message {
+      margin: 8px 0;
     }
 
-    .ad-message {
-      margin-top: 8px;
-    }
-
-    .ad-actions, .ad-footer {
+    .ad-popup .buttons {
       display: flex;
       justify-content: space-between;
       margin-top: 10px;
     }
 
-    .ad-actions button, .ad-footer button {
-      padding: 4px 8px;
-      font-size: 0.9em;
+    .ad-popup .buttons button {
+      flex: 1;
+      margin: 2px;
+      padding: 6px;
       cursor: pointer;
+      font-size: 0.9em;
     }
 
     .ad-progress {
-      height: 4px;
-      background: dodgerblue;
-      width: 0;
-      border-radius: 4px;
+      height: 5px;
+      background-color: dodgerblue;
+      width: 0%;
+      margin-top: 8px;
+      border-radius: 3px;
       transition: width linear;
-      margin-top: 5px;
     }
   </style>
 </head>
 <body>
 
 <script>
-  const adBanners = [
+  const banners = [
     {
-      title: "Nowy produkt!",
-      message: "Sprawdź naszą najnowszą ofertę!",
-      image: "https://source.unsplash.com/featured/300x200?tech",
+      title: "Nowość!",
+      message: "Zobacz nasze nowe produkty!",
+      image: "https://source.unsplash.com/300x180/?technology",
       link: "https://example.com/tech"
     },
     {
-      title: "Promocja wakacyjna",
-      message: "Zarezerwuj wakacje 20% taniej!",
-      image: "https://source.unsplash.com/featured/300x200?beach",
+      title: "Wakacyjna promocja!",
+      message: "Tylko teraz 50% taniej!",
+      image: "https://source.unsplash.com/300x180/?vacation",
       link: "https://example.com/vacation"
     },
     {
-      title: "Gadżety dla graczy",
-      message: "Zobacz najlepsze akcesoria gamingowe!",
-      image: "https://source.unsplash.com/featured/300x200?gaming",
+      title: "Gaming Zone",
+      message: "Sprzęt dla graczy w promocji.",
+      image: "https://source.unsplash.com/300x180/?gaming",
       link: "https://example.com/gaming"
     }
   ];
 
-  let currentAdIndex = 0;
-  let popupEl = null;
-  let interval = null;
-  let neverShow = localStorage.getItem("neverShowAds") === "true";
+  let adIndex = 0;
+  let popup;
+  let interval;
+  const neverShow = localStorage.getItem("ads_off") === "1";
 
-  function showAd(index) {
-    if (neverShow) return;
+  function createBanner(ad) {
+    // usuń poprzedni baner
+    if (popup) popup.remove();
 
-    const ad = adBanners[index];
-    if (popupEl) popupEl.remove();
+    popup = document.createElement("div");
+    popup.className = "ad-popup";
 
-    popupEl = document.createElement("div");
-    popupEl.className = "ad-popup visible";
-
-    popupEl.innerHTML = `
-      <div class="ad-header">${ad.title}</div>
-      <img src="${ad.image}" class="ad-image" alt="${ad.title}" />
-      <div class="ad-message">${ad.message}</div>
-      <div class="ad-actions">
-        <button class="btn-go">Zobacz</button>
-        <button class="btn-close">Zamknij</button>
+    popup.innerHTML = `
+      <img src="${ad.image}" alt="Banner">
+      <div class="title">${ad.title}</div>
+      <div class="message">${ad.message}</div>
+      <div class="buttons">
+        <button onclick="window.open('${ad.link}', '_blank')">Zobacz</button>
+        <button onclick="popup.remove()">Zamknij</button>
       </div>
-      <div class="ad-footer">
-        <button class="btn-never">Nigdy nie pokazuj</button>
-        <div class="ad-progress"></div>
+      <div class="buttons">
+        <button onclick="neverShowAds()">Nigdy nie pokazuj</button>
       </div>
+      <div class="ad-progress" id="progressBar"></div>
     `;
 
-    // Obsługa kliknięć
-    popupEl.querySelector(".btn-go").onclick = () => window.open(ad.link, "_blank");
-    popupEl.querySelector(".ad-image").onclick = () => window.open(ad.link, "_blank");
-    popupEl.querySelector(".btn-close").onclick = () => popupEl.classList.remove("visible");
-    popupEl.querySelector(".btn-never").onclick = () => {
-      localStorage.setItem("neverShowAds", "true");
-      popupEl.classList.remove("visible");
-    };
+    document.body.appendChild(popup);
 
-    document.body.appendChild(popupEl);
+    // animacja pojawienia
+    setTimeout(() => popup.classList.add("visible"), 50);
 
-    // Pasek postępu (resetuj i animuj)
-    const bar = popupEl.querySelector(".ad-progress");
-    bar.style.width = "0%";
+    // pasek postępu
+    const progress = popup.querySelector("#progressBar");
+    progress.style.transition = "width 7s linear";
+    progress.style.width = "100%";
+
+    // automatyczne zniknięcie
     setTimeout(() => {
-      bar.style.transition = "width 7s linear";
-      bar.style.width = "100%";
-    }, 100);
+      popup?.remove();
+    }, 7000);
   }
 
   function rotateAds() {
     if (neverShow) return;
-    showAd(currentAdIndex);
-    currentAdIndex = (currentAdIndex + 1) % adBanners.length;
+    createBanner(banners[adIndex]);
+    adIndex = (adIndex + 1) % banners.length;
   }
 
-  window.addEventListener("load", () => {
-    rotateAds();
-    interval = setInterval(rotateAds, 8000); // co 8 sekund zmiana
+  function neverShowAds() {
+    localStorage.setItem("ads_off", "1");
+    popup?.remove();
+    clearInterval(interval);
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    if (!neverShow) {
+      rotateAds();
+      interval = setInterval(rotateAds, 9000);
+    }
   });
 </script>
 
