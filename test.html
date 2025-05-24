@@ -1,158 +1,549 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Reklamy rotacyjne</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mega Rozbudowana Reklama Popup</title>
+<style>
+  :root {
+    --clr-primary: #4a90e2;
+    --clr-secondary: #f5a623;
+    --clr-bg-light: #fff;
+    --clr-bg-dark: #222;
+    --clr-text-light: #222;
+    --clr-text-dark: #eee;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  body {
+    font-family: var(--font-family);
+    margin: 0; padding: 0;
+    background: var(--clr-bg-dark);
+    color: var(--clr-text-dark);
+  }
 
-    .ad-popup {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 300px;
-      background-color: white;
-      border: 2px solid #555;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-      padding: 10px;
-      z-index: 10000;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.5s, transform 0.5s;
-    }
+  /* Kontener reklamy */
+  .ad-popup {
+    position: fixed;
+    width: 350px;
+    max-width: 90vw;
+    background: var(--clr-bg-dark);
+    color: var(--clr-text-dark);
+    box-shadow: var(--shadow);
+    border-radius: 16px;
+    overflow: hidden;
+    z-index: 9999999;
+    font-size: 14px;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    outline: none;
+    opacity: 0;
+    transform: translateY(100%) scale(0.8);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ad-popup.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 
-    .ad-popup.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Pozycje */
+  .pos-bottom-right { bottom: 20px; right: 20px; }
+  .pos-bottom-left { bottom: 20px; left: 20px; }
+  .pos-top-center { top: 20px; left: 50%; transform: translateX(-50%) scale(0.8); }
+  .pos-center { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); }
 
-    .ad-popup img {
-      width: 100%;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+  /* Tryb jasny/ciemny */
+  .theme-dark {
+    background: var(--clr-bg-dark);
+    color: var(--clr-text-dark);
+  }
+  .theme-light {
+    background: var(--clr-bg-light);
+    color: var(--clr-text-light);
+  }
 
-    .ad-popup .title {
-      font-weight: bold;
-      font-size: 1.1em;
-      margin-top: 5px;
-    }
+  /* Nagłówek */
+  .ad-header {
+    padding: 18px 24px;
+    font-weight: 700;
+    font-size: 20px;
+    background: rgba(255 255 255 / 0.1);
+    text-align: center;
+  }
 
-    .ad-popup .message {
-      margin: 8px 0;
-    }
+  /* Obrazek */
+  .ad-image {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(255 255 255 / 0.1);
+    cursor: pointer;
+  }
 
-    .ad-popup .buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
+  /* Tekst */
+  .ad-message {
+    padding: 16px 24px;
+    flex-grow: 1;
+    line-height: 1.5;
+    overflow-y: auto;
+  }
 
-    .ad-popup .buttons button {
-      flex: 1;
-      margin: 2px;
-      padding: 6px;
-      cursor: pointer;
-      font-size: 0.9em;
-    }
+  /* Przyciski */
+  .ad-actions {
+    display: flex;
+    gap: 14px;
+    padding: 14px 24px;
+    background: rgba(0,0,0,0.15);
+  }
+  .ad-actions button {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    background: var(--clr-secondary);
+    color: #222;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 14px 0;
+    box-shadow: 0 3px 9px rgba(0,0,0,0.3);
+    transition: background-color 0.25s ease, transform 0.15s ease;
+  }
+  .ad-actions button:hover, .ad-actions button:focus {
+    background: #f7c156;
+    outline: none;
+  }
+  .ad-actions button:active {
+    transform: scale(0.96);
+  }
 
-    .ad-progress {
-      height: 5px;
-      background-color: dodgerblue;
-      width: 0%;
-      margin-top: 8px;
-      border-radius: 3px;
-      transition: width linear;
-    }
-  </style>
+  /* Pasek postępu */
+  .ad-progress {
+    height: 5px;
+    background: var(--clr-primary);
+    width: 0%;
+    transition: width linear;
+  }
+
+  /* Stopka */
+  .ad-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.25);
+    padding: 12px 24px;
+    font-size: 13px;
+  }
+  .ad-footer button {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .ad-footer button:disabled {
+    color: #666;
+    cursor: default;
+  }
+  .ad-footer button:hover:not(:disabled), .ad-footer button:focus:not(:disabled) {
+    color: var(--clr-secondary);
+    outline: none;
+  }
+
+  /* Tryb cichy - banner dolny */
+  .ad-popup.silent {
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    transform: translateY(0) scale(1) !important;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 24px;
+    font-size: 16px;
+    box-shadow: 0 -3px 12px rgba(0,0,0,0.7);
+  }
+  .ad-popup.silent .ad-image,
+  .ad-popup.silent .ad-message,
+  .ad-popup.silent .ad-actions,
+  .ad-popup.silent .ad-footer,
+  .ad-popup.silent .ad-progress {
+    display: none;
+  }
+  .ad-popup.silent::before {
+    content: "🔥 Super Promocja! Kliknij, aby dowiedzieć się więcej.";
+    flex-grow: 1;
+    color: var(--clr-secondary);
+    cursor: pointer;
+  }
+
+  /* Dodatkowe efekty przycisków */
+  .btn-mute-toggle {
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 9999px;
+    padding: 6px 12px;
+    background: var(--clr-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    user-select: none;
+  }
+</style>
 </head>
 <body>
 
 <script>
-  const banners = [
-    {
-      title: "Nowość!",
-      message: "Zobacz nasze nowe produkty!",
-      image: "https://source.unsplash.com/300x180/?technology",
-      link: "https://example.com/tech"
+(() => {
+  "use strict";
+
+  // --- CONFIG ---
+  const config = {
+    position: "pos-bottom-right", // pos-bottom-left, pos-top-center, pos-center
+    theme: "theme-dark", // theme-dark, theme-light
+    silentMode: false,
+    language: "pl", // pl, en
+    maxDailyShows: 3,
+    retryDelaysMinutes: [10, 30, 60], // retry intervals after closing (progressive)
+    durationMs: 30000, // how long popup stays open (ms)
+  };
+
+  // --- TEXTS ---
+  const texts = {
+    pl: {
+      title: "Super promocja tylko dziś!",
+      message: "Nie przegap naszej wyjątkowej oferty! Kliknij przycisk „Kup teraz” i zyskaj 50% rabatu na wszystkie produkty.",
+      btnBuy: "Kup teraz",
+      btnMore: "Dowiedz się więcej",
+      btnClose: "Zamknij",
+      btnNeverShow: "Nigdy nie pokazuj",
+      muteOn: "🔈 Dźwięki: ON",
+      muteOff: "🔇 Dźwięki: OFF",
+      silentBannerText: "🔥 Super Promocja! Kliknij, aby dowiedzieć się więcej.",
+      ariaLabel: "Okno popup z reklamą promocyjną",
     },
-    {
-      title: "Wakacyjna promocja!",
-      message: "Tylko teraz 50% taniej!",
-      image: "https://source.unsplash.com/300x180/?vacation",
-      link: "https://example.com/vacation"
-    },
-    {
-      title: "Gaming Zone",
-      message: "Sprzęt dla graczy w promocji.",
-      image: "https://source.unsplash.com/300x180/?gaming",
-      link: "https://example.com/gaming"
+    en: {
+      title: "Super sale just today!",
+      message: "Don't miss our special offer! Click 'Buy Now' and get 50% off all products.",
+      btnBuy: "Buy Now",
+      btnMore: "Learn More",
+      btnClose: "Close",
+      btnNeverShow: "Never Show Again",
+      muteOn: "🔈 Sound: ON",
+      muteOff: "🔇 Sound: OFF",
+      silentBannerText: "🔥 Super Sale! Click to learn more.",
+      ariaLabel: "Popup window with promotional advertisement",
     }
-  ];
+  };
 
-  let adIndex = 0;
-  let popup;
-  let interval;
-  const neverShow = localStorage.getItem("ads_off") === "1";
+  // --- STATE ---
+  let showCount = 0;
+  let retryIndex = 0;
+  let isMuted = false;
+  let retryTimeout = null;
 
-  function createBanner(ad) {
-    // usuń poprzedni baner
-    if (popup) popup.remove();
+  // --- STORAGE KEYS ---
+  const STORAGE_KEY_SHOWS = "adPopupShows";
+  const STORAGE_KEY_MUTED = "adPopupMuted";
+  const STORAGE_KEY_NEVER_SHOW = "adPopupNeverShow";
 
-    popup = document.createElement("div");
-    popup.className = "ad-popup";
+  // --- SOUNDS ---
+  const soundClickUrl = "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg";
+  const soundShowUrl = "https://actions.google.com/sounds/v1/cartoon/pop.ogg";
 
-    popup.innerHTML = `
-      <img src="${ad.image}" alt="Banner">
-      <div class="title">${ad.title}</div>
-      <div class="message">${ad.message}</div>
-      <div class="buttons">
-        <button onclick="window.open('${ad.link}', '_blank')">Zobacz</button>
-        <button onclick="popup.remove()">Zamknij</button>
-      </div>
-      <div class="buttons">
-        <button onclick="neverShowAds()">Nigdy nie pokazuj</button>
-      </div>
-      <div class="ad-progress" id="progressBar"></div>
-    `;
+  let audioClick, audioShow;
+
+  // --- UTILS ---
+  function getLocalStorageNumber(key) {
+    const val = localStorage.getItem(key);
+    return val ? parseInt(val, 10) : 0;
+  }
+  function setLocalStorageNumber(key, val) {
+    localStorage.setItem(key, val.toString());
+  }
+  function getLocalStorageBoolean(key) {
+    return localStorage.getItem(key) === "true";
+  }
+  function setLocalStorageBoolean(key, val) {
+    localStorage.setItem(key, val ? "true" : "false");
+  }
+
+  // --- CREATE POPUP ELEMENT ---
+  function createPopup() {
+    const lang = texts[config.language];
+    const popup = document.createElement("div");
+    popup.className = `ad-popup ${config.position} ${config.theme}`;
+    popup.setAttribute("role", "dialog");
+    popup.setAttribute("aria-label", lang.ariaLabel);
+    popup.tabIndex = 0; // focusable for accessibility
+
+    // Silent mode banner
+    if (config.silentMode) {
+      popup.classList.add("silent");
+      popup.title = lang.silentBannerText;
+      popup.addEventListener("click", () => {
+        openLink();
+        incrementClicks();
+        closePopup();
+      });
+      document.body.appendChild(popup);
+      return popup;
+    }
+
+    // Header
+    const header = document.createElement("div");
+    header.className = "ad-header";
+    header.textContent = lang.title;
+    popup.appendChild(header);
+
+    // Image (clickable)
+    const image = document.createElement("img");
+    image.className = "ad-image";
+    image.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"; 
+    image.alt = lang.title;
+    image.tabIndex = 0;
+    image.style.userSelect = "none";
+    image.addEventListener("click", () => {
+      openLink();
+      incrementClicks();
+      closePopup();
+    });
+    image.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openLink();
+        incrementClicks();
+        closePopup();
+      }
+    });
+    popup.appendChild(image);
+
+    // Message
+    const message = document.createElement("div");
+    message.className = "ad-message";
+    message.textContent = lang.message;
+    popup.appendChild(message);
+
+    // Actions (buttons)
+    const actions = document.createElement("div");
+    actions.className = "ad-actions";
+
+    const btnBuy = document.createElement("button");
+    btnBuy.type = "button";
+    btnBuy.textContent = lang.btnBuy;
+    btnBuy.addEventListener("click", () => {
+      openLink();
+      incrementClicks();
+      closePopup();
+    });
+    actions.appendChild(btnBuy);
+
+    const btnMore = document.createElement("button");
+    btnMore.type = "button";
+    btnMore.textContent = lang.btnMore;
+    btnMore.addEventListener("click", () => {
+      openLink();
+      incrementClicks();
+      // do NOT close popup on more info
+    });
+    actions.appendChild(btnMore);
+
+    popup.appendChild(actions);
+
+    // Progress bar
+    const progress = document.createElement("div");
+    progress.className = "ad-progress";
+    popup.appendChild(progress);
+
+    // Footer (mute, close, never show)
+    const footer = document.createElement("div");
+    footer.className = "ad-footer";
+
+    // Mute toggle
+    const btnMute = document.createElement("button");
+    btnMute.type = "button";
+    btnMute.className = "btn-mute-toggle";
+    btnMute.setAttribute("aria-pressed", "false");
+    btnMute.title = lang.muteOn;
+    btnMute.textContent = isMuted ? lang.muteOff : lang.muteOn;
+    btnMute.addEventListener("click", () => {
+      isMuted = !isMuted;
+      btnMute.textContent = isMuted ? lang.muteOff : lang.muteOn;
+      btnMute.title = isMuted ? lang.muteOff : lang.muteOn;
+      btnMute.setAttribute("aria-pressed", isMuted ? "true" : "false");
+      setLocalStorageBoolean(STORAGE_KEY_MUTED, isMuted);
+    });
+    footer.appendChild(btnMute);
+
+    // Close button
+    const btnClose = document.createElement("button");
+    btnClose.type = "button";
+    btnClose.textContent = lang.btnClose;
+    btnClose.title = lang.btnClose;
+    btnClose.addEventListener("click", () => {
+      closePopup();
+    });
+    footer.appendChild(btnClose);
+
+    // Never show again button
+    const btnNever = document.createElement("button");
+    btnNever.type = "button";
+    btnNever.textContent = lang.btnNeverShow;
+    btnNever.title = lang.btnNeverShow;
+    btnNever.addEventListener("click", () => {
+      setLocalStorageBoolean(STORAGE_KEY_NEVER_SHOW, true);
+      closePopup();
+    });
+    footer.appendChild(btnNever);
+
+    popup.appendChild(footer);
 
     document.body.appendChild(popup);
 
-    // animacja pojawienia
-    setTimeout(() => popup.classList.add("visible"), 50);
-
-    // pasek postępu
-    const progress = popup.querySelector("#progressBar");
-    progress.style.transition = "width 7s linear";
-    progress.style.width = "100%";
-
-    // automatyczne zniknięcie
-    setTimeout(() => {
-      popup?.remove();
-    }, 7000);
+    return popup;
   }
 
-  function rotateAds() {
-    if (neverShow) return;
-    createBanner(banners[adIndex]);
-    adIndex = (adIndex + 1) % banners.length;
-  }
-
-  function neverShowAds() {
-    localStorage.setItem("ads_off", "1");
-    popup?.remove();
-    clearInterval(interval);
-  }
-
-  window.addEventListener("DOMContentLoaded", () => {
-    if (!neverShow) {
-      rotateAds();
-      interval = setInterval(rotateAds, 9000);
+  // --- OPEN LINK ---
+  function openLink() {
+    // Podmień link na swój!
+    const url = "https://www.example.com/promo";
+    window.open(url, "_blank", "noopener,noreferrer");
+    if (!isMuted && audioClick) {
+      audioClick.play().catch(() => {});
     }
+  }
+
+  // --- CLOSE POPUP ---
+  function closePopup() {
+    if (!popupEl) return;
+    popupEl.classList.remove("visible");
+    // Po animacji usuń element z DOM
+    setTimeout(() => {
+      if (popupEl && popupEl.parentNode) {
+        popupEl.parentNode.removeChild(popupEl);
+      }
+      popupEl = null;
+    }, 400);
+  }
+
+  // --- INCREMENT SHOWS ---
+  function incrementShows() {
+    showCount++;
+    setLocalStorageNumber(STORAGE_KEY_SHOWS, showCount);
+  }
+
+  // --- INCREMENT CLICKS ---
+  function incrementClicks() {
+    // Możesz dodać licznik kliknięć (np. do analityki)
+    // tutaj przykład zapisu do localStorage
+    let clicks = getLocalStorageNumber("adPopupClicks");
+    clicks++;
+    setLocalStorageNumber("adPopupClicks", clicks);
+  }
+
+  // --- SHOW POPUP ---
+  function showPopup() {
+    if (getLocalStorageBoolean(STORAGE_KEY_NEVER_SHOW)) {
+      console.log("Popup nie jest wyświetlany, bo jest ustawione 'nigdy nie pokazuj'.");
+      return;
+    }
+
+    // Pobierz liczbę wyświetleń dzisiaj (reset co północ)
+    if (!showCount) {
+      const storedDate = localStorage.getItem("adPopupShowsDate");
+      const today = (new Date()).toISOString().slice(0,10);
+      if (storedDate !== today) {
+        showCount = 0;
+        localStorage.setItem("adPopupShowsDate", today);
+        setLocalStorageNumber(STORAGE_KEY_SHOWS, 0);
+      } else {
+        showCount = getLocalStorageNumber(STORAGE_KEY_SHOWS);
+      }
+    }
+
+    if (showCount >= config.maxDailyShows) {
+      console.log(`Limit wyświetleń dziennych (${config.maxDailyShows}) został osiągnięty.`);
+      return;
+    }
+
+    // Stwórz popup
+    popupEl = createPopup();
+
+    // Załaduj dźwięki
+    audioClick = new Audio(soundClickUrl);
+    audioShow = new Audio(soundShowUrl);
+    audioShow.volume = 0.4;
+
+    isMuted = getLocalStorageBoolean(STORAGE_KEY_MUTED);
+    if (isMuted) {
+      audioClick.muted = true;
+      audioShow.muted = true;
+    }
+
+    // Pokaż popup z animacją
+    setTimeout(() => {
+      if (popupEl) {
+        popupEl.classList.add("visible");
+        if (!isMuted) {
+          audioShow.play().catch(() => {});
+        }
+      }
+    }, 50);
+
+    // Inkrementuj wyświetlenia
+    incrementShows();
+
+    // Obsługa progresu
+    const progressBar = popupEl.querySelector(".ad-progress");
+    if (progressBar) {
+      progressBar.style.transitionDuration = config.durationMs + "ms";
+      // animuj progres
+      setTimeout(() => {
+        progressBar.style.width = "100%";
+      }, 100);
+    }
+
+    // Po czasie durationMs zamknij popup i ewentualnie ustal retry
+    retryTimeout = setTimeout(() => {
+      closePopup();
+      retryIndex = Math.min(retryIndex + 1, config.retryDelaysMinutes.length -1);
+      const delay = config.retryDelaysMinutes[retryIndex];
+      console.log(`Popup ponownie pojawi się za ${delay} minut.`);
+      setTimeout(() => {
+        showPopup();
+      }, delay * 60 * 1000);
+    }, config.durationMs);
+  }
+
+  // --- INIT ---
+  let popupEl = null;
+
+  // Na starcie pokaż popup (po krótkim delayu)
+  window.addEventListener("load", () => {
+    showPopup();
   });
+
+  // Eksport do global, jeśli potrzebujesz
+  window.adPopup = {
+    show: showPopup,
+    close: closePopup,
+    toggleMute: () => {
+      isMuted = !isMuted;
+      setLocalStorageBoolean(STORAGE_KEY_MUTED, isMuted);
+      if (popupEl) {
+        const btnMute = popupEl.querySelector(".btn-mute-toggle");
+        if (btnMute) {
+          btnMute.textContent = isMuted ? texts[config.language].muteOff : texts[config.language].muteOn;
+          btnMute.setAttribute("aria-pressed", isMuted ? "true" : "false");
+          btnMute.title = isMuted ? texts[config.language].muteOff : texts[config.language].muteOn;
+        }
+      }
+    }
+  };
+})();
 </script>
 
 </body>
